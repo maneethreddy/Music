@@ -139,16 +139,25 @@ struct LibraryView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.clear)
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: [
-                            GridItem(.flexible(), spacing: 16),
-                            GridItem(.flexible(), spacing: 16)
-                        ], spacing: 20) {
-                            ForEach(filteredAlbums, id: \.id) { album in
-                                AlbumGridView(album: album) {
-                                    selectedAlbum = album
+                        VStack(spacing: 20) {
+                            ForEach(Array(filteredAlbums.enumerated()), id: \.element.id) { index, album in
+                                if index % 2 == 0 {
+                                    HStack(spacing: 16) {
+                                        AlbumGridView(album: album) {
+                                            selectedAlbum = album
+                                        }
+                                        
+                                        if index + 1 < filteredAlbums.count {
+                                            AlbumGridView(album: filteredAlbums[index + 1]) {
+                                                selectedAlbum = filteredAlbums[index + 1]
+                                            }
+                                        } else {
+                                            Spacer()
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -180,7 +189,7 @@ struct LibraryView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.clear)
                 } else {
                     List {
                         ForEach(filteredSongs, id: \.id) { song in
@@ -204,7 +213,7 @@ struct LibraryView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.clear)
         .sheet(item: $selectedAlbum) { album in
             AlbumDetailView(album: album, viewModel: viewModel)
         }
@@ -294,7 +303,7 @@ struct FilterChip: View {
                 .fontWeight(.medium)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.blue : Color(.systemGray5))
+                .background(isSelected ? Color.blue : Color.gray.opacity(0.2))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
         }

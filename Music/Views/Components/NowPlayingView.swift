@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct NowPlayingView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
@@ -113,7 +112,7 @@ struct NowPlayingView: View {
             }
             .padding(.horizontal)
         }
-        .background(Color(uiColor: .systemBackground))
+        .background(Color.clear)
         .cornerRadius(16)
         .shadow(radius: 2)
     }

@@ -36,7 +36,7 @@ struct QueueView: View {
                         .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemGroupedBackground))
+                .background(Color.clear)
             } else {
                 List {
                     ForEach(Array(viewModel.queue.enumerated()), id: \.element.id) { index, song in
@@ -61,7 +61,7 @@ struct QueueView: View {
                 .listStyle(PlainListStyle())
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.clear)
     }
 }
 

@@ -36,12 +36,14 @@ class LocalMusicPlayer: MusicPlayerProtocol {
     }
     
     private func setupAudioSession() {
+        #if os(iOS)
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             print("Failed to setup audio session: \(error)")
         }
+        #endif
     }
     
     private func startTimer() {

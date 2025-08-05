@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct ContentView: View {
     @StateObject private var viewModel = MusicPlayerViewModel()
@@ -35,7 +34,7 @@ struct ContentView: View {
                 QueueView(viewModel: viewModel)
                     .tag(2)
             }
-            .padding(.bottom, 49) // Add padding for music player height
+            .padding(.bottom, 80) // Add padding for music player height
             
             // Music Player in Middle
             PersistentMusicPlayerView(viewModel: viewModel)
@@ -62,8 +61,8 @@ struct ContentView: View {
                     isSelected: selectedTab == 2,
                     action: { selectedTab = 2 }
                 )
-            }
-            .background(Color(uiColor: .systemBackground))
+                                }
+            .background(Color.clear)
             .shadow(radius: 1)
         }
         .alert("Error", isPresented: Binding(
@@ -83,6 +82,7 @@ struct ContentView: View {
 
 struct PersistentMusicPlayerView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
+    @State private var showNowPlayingSheet = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -92,12 +92,12 @@ struct PersistentMusicPlayerView: View {
                 .scaleEffect(x: 1, y: 0.5, anchor: .center)
             
             // Music player content
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 // Album artwork
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.3))
-                        .frame(width: 50, height: 50)
+                        .frame(width: 40, height: 40)
                     
                     if let currentSong = viewModel.currentSong {
                         if viewModel.isPlaying {
@@ -143,7 +143,7 @@ struct PersistentMusicPlayerView: View {
                 Spacer()
                 
                 // Controls
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     Button(action: {
                         viewModel.playPrevious()
                     }) {
@@ -173,9 +173,306 @@ struct PersistentMusicPlayerView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color(uiColor: .systemBackground))
+            .padding(.vertical, 8)
+            .background(Color.clear)
             .shadow(radius: 1)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if viewModel.currentSong != nil {
+                    showNowPlayingSheet = true
+                }
+            }
+        }
+        .sheet(isPresented: $showNowPlayingSheet) {
+            NowPlayingSheetView(viewModel: viewModel)
+        }
+    }
+}
+
+struct NowPlayingSheetView: View {
+    @ObservedObject var viewModel: MusicPlayerViewModel
+    @Environment(\.presentationMode) var presentationMode
+    @State private var volume: Float = 0.5
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Header with current song info
+                if let currentSong = viewModel.currentSong {
+                    HStack(spacing: 12) {
+                        // Album artwork
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 60, height: 60)
+                            
+                            if viewModel.isPlaying {
+                                Image(systemName: "speaker.wave.2.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.blue)
+                            } else {
+                                Image(systemName: "music.note")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                        
+                        // Song info
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(currentSong.title)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .lineLimit(1)
+                            
+                            Text(currentSong.artist)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                        
+                        Spacer()
+                        
+                        // Control buttons
+                        HStack(spacing: 16) {
+                            Button(action: {}) {
+                                Image(systemName: "heart")
+                                    .font(.title3)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Button(action: {}) {
+                                Image(systemName: "ellipsis")
+                                    .font(.title3)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Button(action: {}) {
+                                Image(systemName: "shuffle")
+                                    .font(.title3)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Button(action: {}) {
+                                Image(systemName: "repeat")
+                                    .font(.title3)
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Button(action: {}) {
+                                Image(systemName: "infinity")
+                                    .font(.title3)
+                                    .foregroundColor(.blue)
+                                    .background(Color.blue.opacity(0.2))
+                                    .clipShape(Circle())
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color.clear)
+                }
+                
+                // Continue Playing Section
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text("Continue Playing")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Spacer()
+                        
+                        Text("Autoplaying similar music")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top)
+                    
+                    // Queue/Continue Playing List
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(Array(viewModel.queue.enumerated()), id: \.element.id) { index, song in
+                                ContinuePlayingRowView(
+                                    song: song,
+                                    isCurrentSong: viewModel.currentSong?.id == song.id,
+                                    isPlaying: viewModel.currentSong?.id == song.id && viewModel.isPlaying,
+                                    onTap: {
+                                        viewModel.play(song: song)
+                                    },
+                                    onAddToQueue: {
+                                        // Song is already in queue, so this would add it again or move it
+                                        viewModel.addToQueue(song)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                // Progress and Controls
+                VStack(spacing: 16) {
+                    // Progress bar
+                    VStack(spacing: 8) {
+                        ProgressView(value: viewModel.progress)
+                            .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                        
+                        HStack {
+                            Text(viewModel.formattedCurrentTime)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            Spacer()
+                            
+                            Text(viewModel.formattedDuration)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    // Main controls
+                    HStack(spacing: 40) {
+                        Button(action: {
+                            viewModel.playPrevious()
+                        }) {
+                            Image(systemName: "backward.fill")
+                                .font(.title)
+                                .foregroundColor(.primary)
+                        }
+                        .disabled(viewModel.currentSong == nil)
+                        
+                        Button(action: {
+                            viewModel.togglePlayPause()
+                        }) {
+                            Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.blue)
+                        }
+                        .disabled(viewModel.currentSong == nil)
+                        
+                        Button(action: {
+                            viewModel.playNext()
+                        }) {
+                            Image(systemName: "forward.fill")
+                                .font(.title)
+                                .foregroundColor(.primary)
+                        }
+                        .disabled(viewModel.currentSong == nil)
+                    }
+                    
+                    // Volume control
+                    HStack(spacing: 12) {
+                        Image(systemName: "speaker.fill")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Slider(value: $volume, in: 0...1) { _ in
+                            viewModel.setVolume(volume)
+                        }
+                        
+                        Image(systemName: "speaker.wave.3.fill")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Additional controls
+                    HStack(spacing: 30) {
+                        Button(action: {}) {
+                            Image(systemName: "quote.bubble")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                        }
+                        
+                        Button(action: {}) {
+                            Image(systemName: "airplayaudio")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                        }
+                        
+                        Button(action: {}) {
+                            Image(systemName: "list.bullet")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding(.bottom)
+                }
+                .background(Color.clear)
+            }
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(
+                trailing: Button("Done") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            )
+            #endif
+        }
+    }
+}
+
+struct ContinuePlayingRowView: View {
+    let song: Song
+    let isCurrentSong: Bool
+    let isPlaying: Bool
+    let onTap: () -> Void
+    let onAddToQueue: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Album artwork
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 50, height: 50)
+                
+                if isCurrentSong && isPlaying {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.title3)
+                        .foregroundColor(.blue)
+                } else {
+                    Image(systemName: "music.note")
+                        .font(.title3)
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            // Song info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(song.title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(isCurrentSong ? .blue : .primary)
+                    .lineLimit(1)
+                
+                Text(song.artist)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+            
+            // Progress indicator for current song
+            if isCurrentSong {
+                ProgressView(value: 0.3) // This would be actual progress
+                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    .frame(width: 60)
+            }
+            
+            // Add to queue button
+            Button(action: onAddToQueue) {
+                Image(systemName: "plus.circle")
+                    .font(.title3)
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(isCurrentSong ? Color.blue.opacity(0.1) : Color.clear)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
         }
     }
 }
@@ -198,7 +495,7 @@ struct TabButton: View {
                     .foregroundColor(isSelected ? .blue : .gray)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
         }
     }
 }

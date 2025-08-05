@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct SearchTestView: View {
-    @StateObject private var searchViewModel = SearchViewModel()
     @StateObject private var musicPlayerViewModel = MusicPlayerViewModel()
+    @StateObject private var searchViewModel: SearchViewModel
     @State private var testQuery = "Eminem - Lose Yourself"
+    
+    init() {
+        let musicPlayerViewModel = MusicPlayerViewModel()
+        self._musicPlayerViewModel = StateObject(wrappedValue: musicPlayerViewModel)
+        self._searchViewModel = StateObject(wrappedValue: SearchViewModel(musicPlayerViewModel: musicPlayerViewModel))
+    }
     
     var body: some View {
         VStack(spacing: 20) {

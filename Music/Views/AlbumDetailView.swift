@@ -195,8 +195,10 @@ struct AlbumDetailView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
+                        .background(Color.clear)
+        #if os(iOS)
         .navigationBarHidden(true)
+        #endif
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {

@@ -69,11 +69,11 @@ struct SearchView: View {
                             .foregroundColor(.secondary)
                     }
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemGroupedBackground))
+                .background(Color.clear)
             } else {
                 // Search Results
                 if searchViewModel.isLoading {
@@ -86,7 +86,7 @@ struct SearchView: View {
                             .foregroundColor(.secondary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.clear)
                 } else if let errorMessage = searchViewModel.errorMessage {
                     VStack(spacing: 16) {
                         Image(systemName: "exclamationmark.triangle")
@@ -108,7 +108,7 @@ struct SearchView: View {
                         .foregroundColor(.blue)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.clear)
                 } else if searchViewModel.searchResults.isEmpty && !searchViewModel.searchText.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "music.note.slash")
@@ -125,7 +125,7 @@ struct SearchView: View {
                             .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemGroupedBackground))
+                    .background(Color.clear)
                 } else {
                     List {
                         ForEach(searchViewModel.searchResults, id: \.id) { song in
@@ -149,7 +149,7 @@ struct SearchView: View {
                 }
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.clear)
     }
 }
 
