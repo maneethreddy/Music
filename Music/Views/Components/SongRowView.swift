@@ -5,8 +5,12 @@ struct SongRowView: View {
     let isPlaying: Bool
     let onTap: () -> Void
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 16) {
             // Album Artwork
             ZStack {
                 if let artworkURL = song.artworkURL {
@@ -22,72 +26,105 @@ struct SongRowView: View {
                                     .foregroundColor(.gray)
                             )
                     }
-                    .frame(width: 50, height: 50)
+                    .frame(width: 56, height: 56)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.3))
-                        .frame(width: 50, height: 50)
+                        .frame(width: 56, height: 56)
                         .overlay(
                             Image(systemName: "music.note")
                                 .foregroundColor(.gray)
                         )
                 }
                 
-                // Playing indicator overlay
+                // Playing indicator overlay with Apple Music colors
                 if isPlaying {
                     Circle()
-                        .fill(Color.blue)
-                        .frame(width: 20, height: 20)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 24, height: 24)
                         .overlay(
                             Image(systemName: "speaker.wave.2.fill")
-                                .font(.caption)
+                                .font(.system(size: 10, weight: .bold))
                                 .foregroundColor(.white)
                         )
-                        .offset(x: 15, y: -15)
+                        .offset(x: 18, y: -18)
+                        .shadow(color: appleMusicPink.opacity(0.4), radius: 4, x: 0, y: 2)
                 }
             }
+            .shadow(color: appleMusicPink.opacity(0.1), radius: 4, x: 0, y: 2)
             
             // Song Info
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(song.title)
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 Text(song.artist)
-                    .font(.subheadline)
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.secondary)
                     .lineLimit(1)
                 
                 if let album = song.album {
                     Text(album)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white)
                         .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(4)
                 }
             }
             
             Spacer()
             
-            // Source Badge
+            // Source Badge with Apple Music colors
             Text(song.source.displayName)
-                .font(.caption2)
+                .font(.system(size: 10, weight: .bold))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(song.source == .local ? Color.blue.opacity(0.2) : Color.green.opacity(0.2))
-                .foregroundColor(song.source == .local ? .blue : .green)
-                .cornerRadius(4)
+                .background(
+                    song.source == .local ? 
+                    AnyShapeStyle(LinearGradient(
+                        gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )) : AnyShapeStyle(Color.green.opacity(0.15))
+                )
+                .foregroundColor(song.source == .local ? .white : .green)
+                .cornerRadius(6)
             
             // Duration
             Text(formatDuration(song.duration))
-                .font(.caption)
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemBackground))
+                .shadow(color: appleMusicPink.opacity(0.05), radius: 2, x: 0, y: 1)
+        )
         .contentShape(Rectangle())
         .onTapGesture {
-            onTap()
+            withAnimation(.easeInOut(duration: 0.2)) {
+                onTap()
+            }
         }
     }
     
@@ -99,7 +136,7 @@ struct SongRowView: View {
 }
 
 #Preview {
-    VStack {
+    VStack(spacing: 16) {
         SongRowView(
             song: Song(
                 title: "Bohemian Rhapsody",
@@ -129,4 +166,5 @@ struct SongRowView: View {
         )
     }
     .padding()
+    .background(Color(.systemGray6))
 } 

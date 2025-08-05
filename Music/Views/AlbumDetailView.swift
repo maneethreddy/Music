@@ -5,6 +5,10 @@ struct AlbumDetailView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
     @Environment(\.dismiss) private var dismiss
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -14,7 +18,7 @@ struct AlbumDetailView: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.title2)
-                        .foregroundColor(.blue)
+                        .foregroundColor(appleMusicPink)
                 }
                 
                 Spacer()
@@ -33,7 +37,7 @@ struct AlbumDetailView: View {
                 }) {
                     Image(systemName: "plus")
                         .font(.title2)
-                        .foregroundColor(.blue)
+                        .foregroundColor(appleMusicPink)
                 }
             }
             .padding()
@@ -69,6 +73,7 @@ struct AlbumDetailView: View {
                             )
                     }
                 }
+                .shadow(color: appleMusicPink.opacity(0.2), radius: 8, x: 0, y: 4)
                 
                 // Album Details
                 VStack(spacing: 8) {
@@ -107,19 +112,26 @@ struct AlbumDetailView: View {
                         }
                     }
                     
-                    // Source Badge
+                    // Source Badge with Apple Music colors
                     Text(album.source.displayName)
                         .font(.caption)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(album.source == .local ? Color.blue.opacity(0.2) : Color.green.opacity(0.2))
-                        .foregroundColor(album.source == .local ? .blue : .green)
+                        .background(
+                            album.source == .local ? 
+                            AnyShapeStyle(LinearGradient(
+                                gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )) : AnyShapeStyle(Color.green.opacity(0.2))
+                        )
+                        .foregroundColor(album.source == .local ? .white : .green)
                         .cornerRadius(8)
                 }
             }
             .padding()
             
-            // Play All Button
+            // Play All Button with Apple Music colors
             if !album.songs.isEmpty {
                 Button(action: {
                     playAlbum()
@@ -134,8 +146,15 @@ struct AlbumDetailView: View {
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.blue)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .cornerRadius(12)
+                    .shadow(color: appleMusicPink.opacity(0.3), radius: 8, x: 0, y: 4)
                 }
                 .padding(.horizontal)
                 .padding(.bottom)
@@ -184,13 +203,13 @@ struct AlbumDetailView: View {
                                 
                                 Spacer()
                                 
-                                // Play Button
+                                // Play Button with Apple Music colors
                                 Button(action: {
                                     viewModel.play(song: song)
                                 }) {
                                     Image(systemName: "play.circle")
                                         .font(.title3)
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(appleMusicPink)
                                 }
                             }
                             .padding(.vertical, 4)
@@ -200,7 +219,7 @@ struct AlbumDetailView: View {
                                 } label: {
                                     Label("Add to Queue", systemImage: "plus")
                                 }
-                                .tint(.blue)
+                                .tint(appleMusicPink)
                             }
                         }
                     }
@@ -209,7 +228,9 @@ struct AlbumDetailView: View {
             }
         }
         .background(Color.clear)
+        #if os(iOS)
         .navigationBarHidden(true)
+        #endif
     }
     
     private func playAlbum() {

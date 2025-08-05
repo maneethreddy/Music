@@ -12,6 +12,10 @@ struct ContentView: View {
     @StateObject private var searchViewModel: SearchViewModel
     @State private var selectedTab = 0
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     init() {
         let musicPlayerViewModel = MusicPlayerViewModel()
         self._viewModel = StateObject(wrappedValue: musicPlayerViewModel)
@@ -67,6 +71,9 @@ struct ContentView: View {
                 .shadow(radius: 1)
             }
         }
+        .navigationDestination(for: Album.self) { album in
+            AlbumDetailView(album: album, viewModel: viewModel)
+        }
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },
             set: { if !$0 { viewModel.clearError() } }
@@ -86,11 +93,15 @@ struct PersistentMusicPlayerView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
     @State private var showNowPlayingSheet = false
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         VStack(spacing: 0) {
             // Progress bar (always visible)
             ProgressView(value: viewModel.progress)
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                .progressViewStyle(LinearProgressViewStyle(tint: appleMusicPink))
                 .scaleEffect(x: 1, y: 0.5, anchor: .center)
             
             // Music player content
@@ -127,7 +138,13 @@ struct PersistentMusicPlayerView: View {
                     // Playing indicator overlay
                     if let currentSong = viewModel.currentSong, viewModel.isPlaying {
                         Circle()
-                            .fill(Color.blue)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(width: 12, height: 12)
                             .overlay(
                                 Image(systemName: "speaker.wave.2.fill")
@@ -180,7 +197,7 @@ struct PersistentMusicPlayerView: View {
                     }) {
                         Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
                             .font(.title2)
-                            .foregroundColor(.blue)
+                            .foregroundColor(appleMusicPink)
                     }
                     .disabled(viewModel.currentSong == nil)
                     
@@ -216,6 +233,10 @@ struct NowPlayingSheetView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var volume: Float = 0.5
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -231,7 +252,7 @@ struct NowPlayingSheetView: View {
                             if viewModel.isPlaying {
                                 Image(systemName: "speaker.wave.2.fill")
                                     .font(.title2)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(appleMusicPink)
                             } else {
                                 Image(systemName: "music.note")
                                     .font(.title2)
@@ -283,8 +304,8 @@ struct NowPlayingSheetView: View {
                             Button(action: {}) {
                                 Image(systemName: "infinity")
                                     .font(.title3)
-                                    .foregroundColor(.blue)
-                                    .background(Color.blue.opacity(0.2))
+                                    .foregroundColor(appleMusicPink)
+                                    .background(appleMusicPink.opacity(0.2))
                                     .clipShape(Circle())
                             }
                         }
@@ -335,7 +356,7 @@ struct NowPlayingSheetView: View {
                     // Progress bar
                     VStack(spacing: 8) {
                         ProgressView(value: viewModel.progress)
-                            .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                            .progressViewStyle(LinearProgressViewStyle(tint: appleMusicPink))
                         
                         HStack {
                             Text(viewModel.formattedCurrentTime)
@@ -360,16 +381,26 @@ struct NowPlayingSheetView: View {
                                 .font(.title)
                                 .foregroundColor(.primary)
                         }
-                        .disabled(viewModel.currentSong == nil)
                         
                         Button(action: {
                             viewModel.togglePlayPause()
                         }) {
-                            Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(.blue)
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 60, height: 60)
+                                
+                                Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                            }
                         }
-                        .disabled(viewModel.currentSong == nil)
                         
                         Button(action: {
                             viewModel.playNext()
@@ -378,7 +409,6 @@ struct NowPlayingSheetView: View {
                                 .font(.title)
                                 .foregroundColor(.primary)
                         }
-                        .disabled(viewModel.currentSong == nil)
                     }
                     
                     // Volume control
@@ -387,9 +417,8 @@ struct NowPlayingSheetView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        Slider(value: $volume, in: 0...1) { _ in
-                            viewModel.setVolume(volume)
-                        }
+                        Slider(value: $volume, in: 0...1)
+                            .accentColor(appleMusicPink)
                         
                         Image(systemName: "speaker.wave.3.fill")
                             .font(.caption)
@@ -440,6 +469,10 @@ struct ContinuePlayingRowView: View {
     let onTap: () -> Void
     let onAddToQueue: () -> Void
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         HStack(spacing: 12) {
             // Album artwork
@@ -451,7 +484,7 @@ struct ContinuePlayingRowView: View {
                 if isCurrentSong && isPlaying {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.title3)
-                        .foregroundColor(.blue)
+                        .foregroundColor(appleMusicPink)
                 } else {
                     Image(systemName: "music.note")
                         .font(.title3)
@@ -464,7 +497,7 @@ struct ContinuePlayingRowView: View {
                 Text(song.title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(isCurrentSong ? .blue : .primary)
+                    .foregroundColor(isCurrentSong ? appleMusicPink : .primary)
                     .lineLimit(1)
                 
                 Text(song.artist)
@@ -478,7 +511,7 @@ struct ContinuePlayingRowView: View {
             // Progress indicator for current song
             if isCurrentSong {
                 ProgressView(value: 0.3) // This would be actual progress
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    .progressViewStyle(LinearProgressViewStyle(tint: appleMusicPink))
                     .frame(width: 60)
             }
             
@@ -486,12 +519,12 @@ struct ContinuePlayingRowView: View {
             Button(action: onAddToQueue) {
                 Image(systemName: "plus.circle")
                     .font(.title3)
-                    .foregroundColor(.blue)
+                    .foregroundColor(appleMusicPink)
             }
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(isCurrentSong ? Color.blue.opacity(0.1) : Color.clear)
+        .background(isCurrentSong ? appleMusicPink.opacity(0.1) : Color.clear)
         .contentShape(Rectangle())
         .onTapGesture {
             onTap()
@@ -505,16 +538,20 @@ struct TabButton: View {
     let isSelected: Bool
     let action: () -> Void
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundColor(isSelected ? .blue : .gray)
+                    .foregroundColor(isSelected ? appleMusicPink : .gray)
                 
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(isSelected ? .blue : .gray)
+                    .foregroundColor(isSelected ? appleMusicPink : .gray)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)

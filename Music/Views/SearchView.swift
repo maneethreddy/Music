@@ -1,155 +1,176 @@
 import SwiftUI
+import Combine
 
 struct SearchView: View {
     @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var musicPlayerViewModel: MusicPlayerViewModel
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("Search")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Spacer()
-                
-                if !searchViewModel.searchResults.isEmpty {
-                    Text("\(searchViewModel.searchResults.count) results")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Search")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Text("Discover new music")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+                
+                Spacer()
+                
+                // Search icon with Apple Music colors
+                Image(systemName: "magnifyingglass")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .padding(12)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(Circle())
+                    .shadow(color: appleMusicPink.opacity(0.3), radius: 8, x: 0, y: 4)
             }
-            .padding()
+            .padding(.horizontal, 20)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
             
             // Search Bar
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                
-                TextField("Search songs, artists, or 'Artist - Title'", text: $searchViewModel.searchText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                if !searchViewModel.searchText.isEmpty {
-                    Button("Clear") {
-                        searchViewModel.clearSearch()
-                    }
-                    .foregroundColor(.blue)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
-            
-            // Search Tips
-            if searchViewModel.searchText.isEmpty && searchViewModel.searchResults.isEmpty {
-                VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 50))
-                        .foregroundColor(.gray)
-                    
-                    Text("Search for Music")
-                        .font(.title3)
                         .foregroundColor(.secondary)
+                        .font(.system(size: 16, weight: .medium))
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Try searching for:")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        Text("• Artist names: 'Eminem'")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text("• Song titles: 'Lose Yourself'")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text("• Artist - Title: 'Eminem - Lose Yourself'")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    TextField("Search for songs, artists, or albums...", text: $searchViewModel.searchText)
+                        .font(.system(size: 16))
+                        .textFieldStyle(PlainTextFieldStyle())
+                    
+                    if !searchViewModel.searchText.isEmpty {
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                searchViewModel.clearSearch()
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                                .font(.system(size: 16))
+                        }
+                        .transition(.scale.combined(with: .opacity))
                     }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+            
+            // Search Results
+            if searchViewModel.isLoading {
+                VStack(spacing: 20) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .foregroundColor(appleMusicPink)
+                    
+                    Text("Searching...")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.clear)
-            } else {
-                // Search Results
-                if searchViewModel.isLoading {
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.2)
+            } else if searchViewModel.searchText.isEmpty {
+                // Empty State
+                VStack(spacing: 24) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 60))
+                        .foregroundColor(appleMusicPink)
+                        .opacity(0.8)
+                    
+                    VStack(spacing: 8) {
+                        Text("Search for music")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                         
-                        Text("Searching...")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.clear)
-                } else if let errorMessage = searchViewModel.errorMessage {
-                    VStack(spacing: 16) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 50))
-                            .foregroundColor(.orange)
-                        
-                        Text("Search Error")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                        
-                        Text(errorMessage)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        Button("Try Again") {
-                            searchViewModel.performSearch(searchViewModel.searchText)
-                        }
-                        .foregroundColor(.blue)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.clear)
-                } else if searchViewModel.searchResults.isEmpty && !searchViewModel.searchText.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "music.note.slash")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
-                        
-                        Text("No Results Found")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                        
-                        Text("Try different search terms or check your spelling")
-                            .font(.subheadline)
+                        Text("Find your favorite songs, artists, and albums")
+                            .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.clear)
-                } else {
-                    List {
-                        ForEach(searchViewModel.searchResults, id: \.id) { song in
-                            SongRowView(
-                                song: song,
-                                isPlaying: musicPlayerViewModel.currentSong?.id == song.id && musicPlayerViewModel.isPlaying
-                            ) {
-                                searchViewModel.playSong(song)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    musicPlayerViewModel.addToQueue(song)
-                                } label: {
-                                    Label("Add to Queue", systemImage: "plus")
-                                }
-                                .tint(.blue)
-                            }
-                        }
-                    }
-                    .listStyle(PlainListStyle())
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 40)
+            } else if searchViewModel.searchResults.isEmpty {
+                // No Results
+                VStack(spacing: 24) {
+                    Image(systemName: "magnifyingglass.circle")
+                        .font(.system(size: 60))
+                        .foregroundColor(.secondary)
+                        .opacity(0.6)
+                    
+                    VStack(spacing: 8) {
+                        Text("No results found")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        
+                        Text("Try searching for something else")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 40)
+            } else {
+                // Results List
+                List {
+                    ForEach(searchViewModel.searchResults) { song in
+                        SongRowView(
+                            song: song,
+                            isPlaying: musicPlayerViewModel.currentSong?.id == song.id && musicPlayerViewModel.isPlaying
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                musicPlayerViewModel.play(song: song)
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    musicPlayerViewModel.addToQueue(song)
+                                }
+                            } label: {
+                                Label("Add to Queue", systemImage: "plus")
+                            }
+                            .tint(appleMusicPink)
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .padding(.vertical, 4)
+                    }
+                }
+                .listStyle(PlainListStyle())
+                .background(Color.clear)
             }
         }
-        .background(Color.clear)
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color(.systemBackground), Color(.systemGray6).opacity(0.3)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 }
 

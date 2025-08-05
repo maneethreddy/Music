@@ -3,6 +3,10 @@ import SwiftUI
 struct NowPlayingView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         VStack(spacing: 16) {
             // Source Selector
@@ -58,10 +62,16 @@ struct NowPlayingView: View {
                                 )
                         }
                         
-                        // Playing indicator overlay
+                        // Playing indicator overlay with Apple Music colors
                         if viewModel.isPlaying {
                             Circle()
-                                .fill(Color.blue)
+                                .fill(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
                                 .frame(width: 30, height: 30)
                                 .overlay(
                                     Image(systemName: "speaker.wave.2.fill")
@@ -92,13 +102,20 @@ struct NowPlayingView: View {
                                 .lineLimit(1)
                         }
                         
-                        // Source Badge
+                        // Source Badge with Apple Music colors
                         Text(currentSong.source.displayName)
                             .font(.caption)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(currentSong.source == .local ? Color.blue.opacity(0.2) : Color.green.opacity(0.2))
-                            .foregroundColor(currentSong.source == .local ? .blue : .green)
+                            .background(
+                                currentSong.source == .local ? 
+                                AnyShapeStyle(LinearGradient(
+                                    gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )) : AnyShapeStyle(Color.green.opacity(0.2))
+                            )
+                            .foregroundColor(currentSong.source == .local ? .white : .green)
                             .cornerRadius(8)
                     }
                 }
@@ -152,7 +169,7 @@ struct NowPlayingView: View {
         case .stopped:
             return .red
         case .loading:
-            return .blue
+            return appleMusicPink
         }
     }
 }

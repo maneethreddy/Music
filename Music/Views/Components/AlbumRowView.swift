@@ -4,24 +4,47 @@ struct AlbumRowView: View {
     let album: Album
     let onTap: () -> Void
     
+    // Apple Music Colors
+    private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
+    private let appleMusicRed = Color(red: 1.0, green: 0.02, blue: 0.21) // #FF0436
+    
     var body: some View {
         HStack(spacing: 12) {
             // Album Artwork
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
+                if let artworkURL = album.artworkURL {
+                    AsyncImage(url: URL(string: artworkURL)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "music.note")
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                            )
+                    }
                     .frame(width: 60, height: 60)
-                
-                Image(systemName: "square.stack")
-                    .font(.title2)
-                    .foregroundColor(.gray)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 60, height: 60)
+                        .overlay(
+                            Image(systemName: "music.note")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                        )
+                }
             }
             
             // Album Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(album.title)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .fontWeight(.semibold)
                     .lineLimit(1)
                 
                 Text(album.artist)
@@ -41,35 +64,40 @@ struct AlbumRowView: View {
                     Text("\(album.songCount) songs")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    if album.duration > 0 {
-                        Text("•")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Text(album.formattedDuration)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
                 }
+                
+                // Source Badge with Apple Music colors
+                Text(album.source.displayName)
+                    .font(.caption2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(
+                        album.source == .local ? 
+                        AnyShapeStyle(LinearGradient(
+                            gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )) : AnyShapeStyle(Color.green.opacity(0.2))
+                    )
+                    .foregroundColor(album.source == .local ? .white : .green)
+                    .cornerRadius(4)
             }
             
             Spacer()
             
-            // Source Badge
-            Text(album.source.displayName)
-                .font(.caption2)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(album.source == .local ? Color.blue.opacity(0.2) : Color.green.opacity(0.2))
-                .foregroundColor(album.source == .local ? .blue : .green)
-                .cornerRadius(4)
+            // Play Button
+            Button(action: onTap) {
+                Image(systemName: "play.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(appleMusicPink)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
         .contentShape(Rectangle())
-        .onTapGesture {
-            onTap()
-        }
     }
 }
 
