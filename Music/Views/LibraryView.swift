@@ -5,6 +5,7 @@ struct LibraryView: View {
     @State private var searchText = ""
     @State private var showAlbums = true
     @State private var selectedTab = 0
+    @State private var selectedAlbum: Album?
     
     // Apple Music Colors
     private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
@@ -264,10 +265,11 @@ struct LibraryView: View {
                 GridItem(.flexible(), spacing: 16)
             ], spacing: 20) {
                 ForEach(filteredAlbums) { album in
-                    NavigationLink(value: album) {
-                        AlbumGridView(album: album) {
-                            // Navigation handled by NavigationLink
-                        }
+                    Button(action: {
+                        selectedAlbum = album
+                        print("Album selected: \(album.title)")
+                    }) {
+                        AlbumGridView(album: album)
                     }
                     .buttonStyle(PlainButtonStyle())
                     .scaleEffect(1.0)
@@ -276,6 +278,11 @@ struct LibraryView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
+        }
+        .sheet(item: $selectedAlbum) { album in
+            NavigationStack {
+                AlbumDetailView(album: album, viewModel: viewModel)
+            }
         }
     }
     
@@ -312,7 +319,6 @@ struct LibraryView: View {
 
 struct AlbumGridView: View {
     let album: Album
-    let onTap: () -> Void
     
     // Apple Music Colors
     private let appleMusicPink = Color(red: 1.0, green: 0.31, blue: 0.42) // #FF4E6B
@@ -354,25 +360,23 @@ struct AlbumGridView: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        Button(action: onTap) {
-                            Image(systemName: "play.circle.fill")
-                                .font(.system(size: 32, weight: .medium))
-                                .foregroundColor(.white)
-                                .background(
-                                    Circle()
-                                        .fill(
-                                            LinearGradient(
-                                                gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 32, weight: .medium))
+                            .foregroundColor(.white)
+                            .background(
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [appleMusicPink, appleMusicRed]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
                                         )
-                                        .frame(width: 40, height: 40)
-                                )
-                                .shadow(color: appleMusicPink.opacity(0.4), radius: 6, x: 0, y: 3)
-                        }
-                        .padding(.trailing, 12)
-                        .padding(.bottom, 12)
+                                    )
+                                    .frame(width: 40, height: 40)
+                            )
+                            .shadow(color: appleMusicPink.opacity(0.4), radius: 6, x: 0, y: 3)
+                            .padding(.trailing, 12)
+                            .padding(.bottom, 12)
                     }
                 }
             }
@@ -426,12 +430,6 @@ struct AlbumGridView: View {
                 }
             }
             .padding(.horizontal, 4)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                onTap()
-            }
         }
     }
 }
