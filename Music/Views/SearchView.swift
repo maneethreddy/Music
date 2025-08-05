@@ -52,7 +52,7 @@ struct SearchView: View {
                         .foregroundColor(.secondary)
                         .font(.system(size: 16, weight: .medium))
                     
-                    TextField("Search for songs, artists, or albums...", text: $searchViewModel.searchText)
+                    TextField("Search for Song Name", text: $searchViewModel.searchText)
                         .font(.system(size: 16))
                         .textFieldStyle(PlainTextFieldStyle())
                     
@@ -103,7 +103,7 @@ struct SearchView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
                         
-                        Text("Find your favorite songs, artists, and albums")
+                        Text("Try: Queen, Bohemian Rhapsody, Eminem - Lose Yourself...")
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
