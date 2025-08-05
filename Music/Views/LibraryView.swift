@@ -2,221 +2,202 @@ import SwiftUI
 
 struct LibraryView: View {
     @ObservedObject var viewModel: MusicPlayerViewModel
-    @State private var selectedSource: MusicSource? = nil
     @State private var searchText = ""
-    @State private var isSearching = false
-    @State private var showAlbums = false
-    @State private var selectedAlbum: Album?
+    @State private var showAlbums = true // Toggle between albums and songs
+    
+    var filteredAlbums: [Album] {
+        viewModel.getAlbumsBySearch(searchText)
+    }
     
     var filteredSongs: [Song] {
-        var songs = viewModel.queue
-        
-        // Filter by source
-        if let selectedSource = selectedSource {
-            songs = songs.filter { $0.source == selectedSource }
+        // Get all songs from all albums
+        var allSongs: [Song] = []
+        for album in viewModel.albums {
+            allSongs.append(contentsOf: album.songs)
         }
         
         // Filter by search text
         if !searchText.isEmpty {
-            songs = songs.filter { song in
+            allSongs = allSongs.filter { song in
                 song.title.localizedCaseInsensitiveContains(searchText) ||
                 song.artist.localizedCaseInsensitiveContains(searchText) ||
                 (song.album?.localizedCaseInsensitiveContains(searchText) ?? false)
             }
         }
         
-        return songs
-    }
-    
-    var filteredAlbums: [Album] {
-        var albums = showAlbums ? viewModel.getAlbumsBySearch(searchText) : []
-        
-        // Filter by source
-        if let selectedSource = selectedSource {
-            albums = albums.filter { $0.source == selectedSource }
-        }
-        
-        return albums
+        return allSongs
     }
     
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
-                Text("Library")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Spacer()
-                
-                Text(showAlbums ? "\(filteredAlbums.count) albums" : "\(filteredSongs.count) songs")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            .padding()
+            headerView
             
             // Search Bar
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary)
-                
-                TextField(showAlbums ? "Search albums or artists..." : "Search songs, artists, or albums...", text: $searchText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                if !searchText.isEmpty {
-                    Button("Clear") {
-                        searchText = ""
-                    }
-                    .foregroundColor(.blue)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
+            searchBarView
             
             // View Toggle
-            HStack {
-                Text("View:")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                Picker("View", selection: $showAlbums) {
-                    Text("Songs").tag(false)
-                    Text("Albums").tag(true)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
+            viewToggleView
             
-            // Source Filter
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    // All Sources
-                    FilterChip(
-                        title: "All",
-                        isSelected: selectedSource == nil,
-                        action: { selectedSource = nil }
-                    )
-                    
-                    // Individual Sources
-                    ForEach(MusicSource.allCases, id: \.self) { source in
-                        FilterChip(
-                            title: source.displayName,
-                            isSelected: selectedSource == source,
-                            action: { selectedSource = source }
-                        )
-                    }
-                }
-                .padding(.horizontal)
-            }
-            .padding(.bottom)
-            
-            // Content List
+            // Content
             if showAlbums {
-                // Albums Grid
-                if filteredAlbums.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "square.stack")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
-                        
-                        Text("No albums found")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                        
-                        if selectedSource != nil {
-                            Text("Try selecting a different source or add albums to your library")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                        } else {
-                            Text("Your album library is empty")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.clear)
-                } else {
-                    ScrollView {
-                        VStack(spacing: 20) {
-                            ForEach(Array(filteredAlbums.enumerated()), id: \.element.id) { index, album in
-                                if index % 2 == 0 {
-                                    HStack(spacing: 16) {
-                                        AlbumGridView(album: album) {
-                                            selectedAlbum = album
-                                        }
-                                        
-                                        if index + 1 < filteredAlbums.count {
-                                            AlbumGridView(album: filteredAlbums[index + 1]) {
-                                                selectedAlbum = filteredAlbums[index + 1]
-                                            }
-                                        } else {
-                                            Spacer()
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .padding()
-                    }
-                }
+                albumsGridView
             } else {
-                // Songs List
-                if filteredSongs.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "music.note.list")
-                            .font(.system(size: 50))
-                            .foregroundColor(.gray)
-                        
-                        Text("No songs found")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
-                        
-                        if selectedSource != nil {
-                            Text("Try selecting a different source or add songs to your library")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                        } else {
-                            Text("Your music library is empty")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.clear)
-                } else {
-                    List {
-                        ForEach(filteredSongs, id: \.id) { song in
-                            SongRowView(
-                                song: song,
-                                isPlaying: viewModel.currentSong?.id == song.id && viewModel.isPlaying
-                            ) {
-                                viewModel.play(song: song)
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    viewModel.addToQueue(song)
-                                } label: {
-                                    Label("Add to Queue", systemImage: "plus")
-                                }
-                                .tint(.blue)
-                            }
-                        }
-                    }
-                    .listStyle(PlainListStyle())
-                }
+                songsListView
             }
         }
         .background(Color.clear)
-        .sheet(item: $selectedAlbum) { album in
-            AlbumDetailView(album: album, viewModel: viewModel)
+    }
+    
+    private var headerView: some View {
+        HStack {
+            Text("Library")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Spacer()
+            
+            Text(showAlbums ? "\(filteredAlbums.count) albums" : "\(filteredSongs.count) songs")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
+        .padding()
+    }
+    
+    private var searchBarView: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
+            
+            TextField(showAlbums ? "Search albums or artists..." : "Search songs, artists, or albums...", text: $searchText)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            if !searchText.isEmpty {
+                Button("Clear") {
+                    searchText = ""
+                }
+                .foregroundColor(.blue)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+    }
+    
+    private var viewToggleView: some View {
+        HStack {
+            Text("View:")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Picker("View", selection: $showAlbums) {
+                Text("Songs").tag(false)
+                Text("Albums").tag(true)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            
+            Spacer()
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
+    }
+    
+    private var albumsGridView: some View {
+        Group {
+            if filteredAlbums.isEmpty {
+                emptyAlbumsView
+            } else {
+                albumsList
+            }
+        }
+    }
+    
+    private var songsListView: some View {
+        Group {
+            if filteredSongs.isEmpty {
+                emptySongsView
+            } else {
+                songsList
+            }
+        }
+    }
+    
+    private var emptyAlbumsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "square.stack")
+                .font(.system(size: 50))
+                .foregroundColor(.gray)
+            
+            Text("No albums found")
+                .font(.title3)
+                .foregroundColor(.secondary)
+            
+            Text("Your album library is empty")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
+    }
+    
+    private var emptySongsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "music.note.list")
+                .font(.system(size: 50))
+                .foregroundColor(.gray)
+            
+            Text("No songs found")
+                .font(.title3)
+                .foregroundColor(.secondary)
+            
+            Text("Your song library is empty")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
+    }
+    
+    private var albumsList: some View {
+        ScrollView {
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                ForEach(filteredAlbums) { album in
+                    NavigationLink(destination: AlbumDetailView(album: album, viewModel: viewModel)) {
+                        AlbumGridView(album: album) {
+                            // Navigation handled by NavigationLink
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+            .padding()
+        }
+    }
+    
+    private var songsList: some View {
+        List {
+            ForEach(filteredSongs) { song in
+                SongRowView(
+                    song: song,
+                    isPlaying: viewModel.currentSong?.id == song.id && viewModel.isPlaying
+                ) {
+                    viewModel.play(song: song)
+                }
+                .swipeActions(edge: .trailing) {
+                    Button {
+                        viewModel.addToQueue(song)
+                    } label: {
+                        Label("Add to Queue", systemImage: "plus")
+                    }
+                    .tint(.blue)
+                }
+            }
+        }
+        .listStyle(PlainListStyle())
     }
 }
 

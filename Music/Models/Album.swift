@@ -1,6 +1,6 @@
 import Foundation
 
-struct Album: Identifiable, Codable, Equatable {
+struct Album: Identifiable, Codable, Equatable, Hashable {
     let id: String
     let title: String
     let artist: String
@@ -23,6 +23,15 @@ struct Album: Identifiable, Codable, Equatable {
         self.artworkURL = artworkURL
         self.source = source
         self.songs = songs
+    }
+    
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Album, rhs: Album) -> Bool {
+        lhs.id == rhs.id
     }
     
     var duration: TimeInterval {

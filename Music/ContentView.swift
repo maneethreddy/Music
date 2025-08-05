@@ -19,51 +19,53 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Tab Content Area at Top
-            TabView(selection: $selectedTab) {
-                // Search Tab
-                SearchView(searchViewModel: searchViewModel, musicPlayerViewModel: viewModel)
-                    .tag(0)
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Tab Content Area at Top
+                TabView(selection: $selectedTab) {
+                    // Search Tab
+                    SearchView(searchViewModel: searchViewModel, musicPlayerViewModel: viewModel)
+                        .tag(0)
+                    
+                    // Library Tab
+                    LibraryView(viewModel: viewModel)
+                        .tag(1)
+                    
+                    // Queue Tab
+                    QueueView(viewModel: viewModel)
+                        .tag(2)
+                }
+                .padding(.bottom, 80) // Add padding for music player height
                 
-                // Library Tab
-                LibraryView(viewModel: viewModel)
-                    .tag(1)
+                // Music Player in Middle
+                PersistentMusicPlayerView(viewModel: viewModel)
                 
-                // Queue Tab
-                QueueView(viewModel: viewModel)
-                    .tag(2)
+                // Tab Bar at Bottom
+                HStack(spacing: 0) {
+                    TabButton(
+                        title: "Search",
+                        icon: "magnifyingglass",
+                        isSelected: selectedTab == 0,
+                        action: { selectedTab = 0 }
+                    )
+                    
+                    TabButton(
+                        title: "Library",
+                        icon: "music.note.list",
+                        isSelected: selectedTab == 1,
+                        action: { selectedTab = 1 }
+                    )
+                    
+                    TabButton(
+                        title: "Queue",
+                        icon: "list.bullet",
+                        isSelected: selectedTab == 2,
+                        action: { selectedTab = 2 }
+                    )
+                }
+                .background(Color.clear)
+                .shadow(radius: 1)
             }
-            .padding(.bottom, 80) // Add padding for music player height
-            
-            // Music Player in Middle
-            PersistentMusicPlayerView(viewModel: viewModel)
-            
-            // Tab Bar at Bottom
-            HStack(spacing: 0) {
-                TabButton(
-                    title: "Search",
-                    icon: "magnifyingglass",
-                    isSelected: selectedTab == 0,
-                    action: { selectedTab = 0 }
-                )
-                
-                TabButton(
-                    title: "Library",
-                    icon: "music.note.list",
-                    isSelected: selectedTab == 1,
-                    action: { selectedTab = 1 }
-                )
-                
-                TabButton(
-                    title: "Queue",
-                    icon: "list.bullet",
-                    isSelected: selectedTab == 2,
-                    action: { selectedTab = 2 }
-                )
-                                }
-            .background(Color.clear)
-            .shadow(radius: 1)
         }
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },

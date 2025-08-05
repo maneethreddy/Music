@@ -59,7 +59,7 @@ class MusicPlayerViewModel: ObservableObject {
         
         // Load sample albums and add sample songs to queue
         loadSampleAlbums()
-        addSampleSongsToQueue()
+        // Queue starts empty - songs must be added manually
     }
     
     // MARK: - Public Methods
@@ -265,30 +265,5 @@ class MusicPlayerViewModel: ObservableObject {
     
     // MARK: - Sample Data
     
-    private func addSampleSongsToQueue() {
-        let sampleSongs = [
-            Song(title: "Lose Yourself", artist: "Eminem", album: "8 Mile", duration: 326, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/lose_yourself"),
-            Song(title: "Shape of You", artist: "Ed Sheeran", album: "÷", duration: 233, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/shape_of_you"),
-            Song(title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", duration: 200, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .spotify, url: "spotify://track/blinding_lights"),
-            Song(title: "Dance Monkey", artist: "Tones and I", album: "The Kids Are Coming", duration: 209, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/dance_monkey"),
-            Song(title: "Bad Guy", artist: "Billie Eilish", album: "When We All Fall Asleep, Where Do We Go?", duration: 194, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/bad_guy"),
-            Song(title: "Old Town Road", artist: "Lil Nas X", album: "7", duration: 157, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/old_town_road"),
-            Song(title: "Someone You Loved", artist: "Lewis Capaldi", album: "Divinely Uninspired to a Hellish Extent", duration: 182, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .spotify, url: "spotify://track/someone_you_loved"),
-            Song(title: "Sunflower", artist: "Post Malone & Swae Lee", album: "Spider-Man: Into the Spider-Verse", duration: 158, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .spotify, url: "spotify://track/sunflower"),
-            Song(title: "Happier", artist: "Marshmello & Bastille", album: "Happier", duration: 214, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/happier"),
-            Song(title: "Without Me", artist: "Eminem", album: "The Eminem Show", duration: 290, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/without_me"),
-            Song(title: "The Real Slim Shady", artist: "Eminem", album: "The Marshall Mathers LP", duration: 284, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/real_slim_shady"),
-            Song(title: "Mockingbird", artist: "Eminem", album: "Encore", duration: 251, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/mockingbird"),
-            Song(title: "Not Afraid", artist: "Eminem", album: "Recovery", duration: 248, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/not_afraid"),
-            Song(title: "Rap God", artist: "Eminem", album: "The Marshall Mathers LP 2", duration: 363, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/rap_god"),
-            Song(title: "Godzilla", artist: "Eminem ft. Juice WRLD", album: "Music to Be Murdered By", duration: 210, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/godzilla")
-        ]
-        
-        // Add sample songs to queue if it's empty
-        if queue.isEmpty {
-            for song in sampleSongs {
-                musicPlayerService.addToQueue(song)
-            }
-        }
-    }
+    // Queue starts empty - songs must be added manually by swiping right
 } 

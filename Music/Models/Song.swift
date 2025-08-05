@@ -1,6 +1,6 @@
 import Foundation
 
-struct Song: Identifiable, Codable, Equatable {
+struct Song: Identifiable, Codable, Equatable, Hashable {
     let id: String
     let title: String
     let artist: String
@@ -27,9 +27,18 @@ struct Song: Identifiable, Codable, Equatable {
         self.source = source
         self.url = url
     }
+    
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Song, rhs: Song) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
-enum MusicSource: String, Codable, CaseIterable {
+enum MusicSource: String, Codable, CaseIterable, Hashable {
     case local = "Local"
     case spotify = "Spotify"
     

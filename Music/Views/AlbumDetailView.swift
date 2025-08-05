@@ -3,14 +3,14 @@ import SwiftUI
 struct AlbumDetailView: View {
     let album: Album
     @ObservedObject var viewModel: MusicPlayerViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.title2)
@@ -122,13 +122,7 @@ struct AlbumDetailView: View {
             // Play All Button
             if !album.songs.isEmpty {
                 Button(action: {
-                    if let firstSong = album.songs.first {
-                        viewModel.play(song: firstSong)
-                        // Add remaining songs to queue
-                        for song in album.songs.dropFirst() {
-                            viewModel.addToQueue(song)
-                        }
-                    }
+                    playAlbum()
                 }) {
                     HStack {
                         Image(systemName: "play.fill")
@@ -214,10 +208,21 @@ struct AlbumDetailView: View {
                 }
             }
         }
-                        .background(Color.clear)
-        #if os(iOS)
+        .background(Color.clear)
         .navigationBarHidden(true)
-        #endif
+    }
+    
+    private func playAlbum() {
+        guard !album.songs.isEmpty else { return }
+        
+        // Play the first song and add the rest to queue
+        let firstSong = album.songs[0]
+        viewModel.play(song: firstSong)
+        
+        // Add remaining songs to queue
+        for song in album.songs.dropFirst() {
+            viewModel.addToQueue(song)
+        }
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {
@@ -228,18 +233,21 @@ struct AlbumDetailView: View {
 }
 
 #Preview {
-    AlbumDetailView(
-        album: Album(
-            title: "A Night at the Opera",
-            artist: "Queen",
-            year: 1975,
-            source: .local,
-            songs: [
-                Song(title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", duration: 354, source: .local, url: "mock://local/bohemian"),
-                Song(title: "You're My Best Friend", artist: "Queen", album: "A Night at the Opera", duration: 180, source: .local, url: "mock://local/best_friend"),
-                Song(title: "Love of My Life", artist: "Queen", album: "A Night at the Opera", duration: 213, source: .local, url: "mock://local/love_of_my_life")
-            ]
-        ),
-        viewModel: MusicPlayerViewModel()
-    )
+    NavigationStack {
+        AlbumDetailView(
+            album: Album(
+                title: "A Night at the Opera",
+                artist: "Queen",
+                year: 1975,
+                artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png",
+                source: .local,
+                songs: [
+                    Song(title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", duration: 354, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/bohemian"),
+                    Song(title: "You're My Best Friend", artist: "Queen", album: "A Night at the Opera", duration: 180, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/best_friend"),
+                    Song(title: "Love of My Life", artist: "Queen", album: "A Night at the Opera", duration: 213, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/love_of_my_life")
+                ]
+            ),
+            viewModel: MusicPlayerViewModel()
+        )
+    }
 } 
