@@ -115,7 +115,7 @@ struct LibraryView: View {
             
             // Content List
             if showAlbums {
-                // Albums List
+                // Albums Grid
                 if filteredAlbums.isEmpty {
                     VStack(spacing: 16) {
                         Image(systemName: "square.stack")
@@ -141,25 +141,19 @@ struct LibraryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemGroupedBackground))
                 } else {
-                    List {
-                        ForEach(filteredAlbums, id: \.id) { album in
-                            AlbumRowView(album: album) {
-                                selectedAlbum = album
-                            }
-                            .swipeActions(edge: .trailing) {
-                                Button {
-                                    // Add all songs to queue
-                                    for song in album.songs {
-                                        viewModel.addToQueue(song)
-                                    }
-                                } label: {
-                                    Label("Add All to Queue", systemImage: "plus")
+                    ScrollView {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
+                        ], spacing: 20) {
+                            ForEach(filteredAlbums, id: \.id) { album in
+                                AlbumGridView(album: album) {
+                                    selectedAlbum = album
                                 }
-                                .tint(.blue)
                             }
                         }
+                        .padding()
                     }
-                    .listStyle(PlainListStyle())
                 }
             } else {
                 // Songs List
@@ -213,6 +207,77 @@ struct LibraryView: View {
         .background(Color(.systemGroupedBackground))
         .sheet(item: $selectedAlbum) { album in
             AlbumDetailView(album: album, viewModel: viewModel)
+        }
+    }
+}
+
+struct AlbumGridView: View {
+    let album: Album
+    let onTap: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Album Artwork
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.3))
+                    .aspectRatio(1, contentMode: .fit)
+                
+                Image(systemName: "square.stack")
+                    .font(.title)
+                    .foregroundColor(.gray)
+            }
+            .overlay(
+                // Play button overlay
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: onTap) {
+                            Image(systemName: "play.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        .padding(.trailing, 8)
+                        .padding(.bottom, 8)
+                    }
+                }
+            )
+            
+            // Album Info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(album.title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                
+                Text(album.artist)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                
+                HStack(spacing: 4) {
+                    Text(album.formattedYear)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    
+                    Text("•")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    
+                    Text("\(album.songCount) songs")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
         }
     }
 }
