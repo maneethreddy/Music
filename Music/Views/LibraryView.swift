@@ -5,6 +5,8 @@ struct LibraryView: View {
     @State private var selectedSource: MusicSource? = nil
     @State private var searchText = ""
     @State private var isSearching = false
+    @State private var showAlbums = false
+    @State private var selectedAlbum: Album?
     
     var filteredSongs: [Song] {
         var songs = viewModel.queue
@@ -26,6 +28,17 @@ struct LibraryView: View {
         return songs
     }
     
+    var filteredAlbums: [Album] {
+        var albums = showAlbums ? viewModel.getAlbumsBySearch(searchText) : []
+        
+        // Filter by source
+        if let selectedSource = selectedSource {
+            albums = albums.filter { $0.source == selectedSource }
+        }
+        
+        return albums
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -36,7 +49,7 @@ struct LibraryView: View {
                 
                 Spacer()
                 
-                Text("\(filteredSongs.count) songs")
+                Text(showAlbums ? "\(filteredAlbums.count) albums" : "\(filteredSongs.count) songs")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -47,7 +60,7 @@ struct LibraryView: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.secondary)
                 
-                TextField("Search songs, artists, or albums...", text: $searchText)
+                TextField(showAlbums ? "Search albums or artists..." : "Search songs, artists, or albums...", text: $searchText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 
                 if !searchText.isEmpty {
@@ -56,6 +69,23 @@ struct LibraryView: View {
                     }
                     .foregroundColor(.blue)
                 }
+            }
+            .padding(.horizontal)
+            .padding(.bottom)
+            
+            // View Toggle
+            HStack {
+                Text("View:")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Picker("View", selection: $showAlbums) {
+                    Text("Songs").tag(false)
+                    Text("Albums").tag(true)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                
+                Spacer()
             }
             .padding(.horizontal)
             .padding(.bottom)
@@ -83,54 +113,107 @@ struct LibraryView: View {
             }
             .padding(.bottom)
             
-            // Songs List
-            if filteredSongs.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "music.note.list")
-                        .font(.system(size: 50))
-                        .foregroundColor(.gray)
-                    
-                    Text("No songs found")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                    
-                    if selectedSource != nil {
-                        Text("Try selecting a different source or add songs to your library")
-                            .font(.subheadline)
+            // Content List
+            if showAlbums {
+                // Albums List
+                if filteredAlbums.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "square.stack")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray)
+                        
+                        Text("No albums found")
+                            .font(.title3)
                             .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    } else {
-                        Text("Your music library is empty")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemGroupedBackground))
-            } else {
-                List {
-                    ForEach(filteredSongs, id: \.id) { song in
-                        SongRowView(
-                            song: song,
-                            isPlaying: viewModel.currentSong?.id == song.id && viewModel.isPlaying
-                        ) {
-                            viewModel.play(song: song)
+                        
+                        if selectedSource != nil {
+                            Text("Try selecting a different source or add albums to your library")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text("Your album library is empty")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
                         }
-                        .swipeActions(edge: .trailing) {
-                            Button {
-                                viewModel.addToQueue(song)
-                            } label: {
-                                Label("Add to Queue", systemImage: "plus")
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemGroupedBackground))
+                } else {
+                    List {
+                        ForEach(filteredAlbums, id: \.id) { album in
+                            AlbumRowView(album: album) {
+                                selectedAlbum = album
                             }
-                            .tint(.blue)
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    // Add all songs to queue
+                                    for song in album.songs {
+                                        viewModel.addToQueue(song)
+                                    }
+                                } label: {
+                                    Label("Add All to Queue", systemImage: "plus")
+                                }
+                                .tint(.blue)
+                            }
                         }
                     }
+                    .listStyle(PlainListStyle())
                 }
-                .listStyle(PlainListStyle())
+            } else {
+                // Songs List
+                if filteredSongs.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "music.note.list")
+                            .font(.system(size: 50))
+                            .foregroundColor(.gray)
+                        
+                        Text("No songs found")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
+                        
+                        if selectedSource != nil {
+                            Text("Try selecting a different source or add songs to your library")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        } else {
+                            Text("Your music library is empty")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemGroupedBackground))
+                } else {
+                    List {
+                        ForEach(filteredSongs, id: \.id) { song in
+                            SongRowView(
+                                song: song,
+                                isPlaying: viewModel.currentSong?.id == song.id && viewModel.isPlaying
+                            ) {
+                                viewModel.play(song: song)
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    viewModel.addToQueue(song)
+                                } label: {
+                                    Label("Add to Queue", systemImage: "plus")
+                                }
+                                .tint(.blue)
+                            }
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
             }
         }
         .background(Color(.systemGroupedBackground))
+        .sheet(item: $selectedAlbum) { album in
+            AlbumDetailView(album: album, viewModel: viewModel)
+        }
     }
 }
 
