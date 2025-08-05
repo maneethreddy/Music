@@ -42,13 +42,32 @@ struct AlbumDetailView: View {
             VStack(spacing: 16) {
                 // Album Artwork
                 ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.3))
+                    if let artworkURL = album.artworkURL {
+                        AsyncImage(url: URL(string: artworkURL)) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.3))
+                                .overlay(
+                                    Image(systemName: "music.note")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                )
+                        }
                         .frame(width: 120, height: 120)
-                    
-                    Image(systemName: "square.stack")
-                        .font(.system(size: 40))
-                        .foregroundColor(.gray)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    } else {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 120, height: 120)
+                            .overlay(
+                                Image(systemName: "music.note")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.gray)
+                            )
+                    }
                 }
                 
                 // Album Details

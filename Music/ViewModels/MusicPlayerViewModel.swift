@@ -190,12 +190,13 @@ class MusicPlayerViewModel: ObservableObject {
             title: "A Night at the Opera",
             artist: "Queen",
             year: 1975,
+            artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png",
             source: .local,
             songs: [
-                Song(title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", duration: 354, source: .local, url: "mock://local/bohemian"),
-                Song(title: "You're My Best Friend", artist: "Queen", album: "A Night at the Opera", duration: 180, source: .local, url: "mock://local/best_friend"),
-                Song(title: "Love of My Life", artist: "Queen", album: "A Night at the Opera", duration: 213, source: .local, url: "mock://local/love_of_my_life"),
-                Song(title: "39", artist: "Queen", album: "A Night at the Opera", duration: 211, source: .local, url: "mock://local/39")
+                Song(title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", duration: 354, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/bohemian"),
+                Song(title: "You're My Best Friend", artist: "Queen", album: "A Night at the Opera", duration: 180, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/best_friend"),
+                Song(title: "Love of My Life", artist: "Queen", album: "A Night at the Opera", duration: 213, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/love_of_my_life"),
+                Song(title: "39", artist: "Queen", album: "A Night at the Opera", duration: 211, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/39")
             ]
         )
         
@@ -203,12 +204,13 @@ class MusicPlayerViewModel: ObservableObject {
             title: "The Dark Side of the Moon",
             artist: "Pink Floyd",
             year: 1973,
+            artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png",
             source: .spotify,
             songs: [
-                Song(title: "Time", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 421, source: .spotify, url: "spotify://track/time"),
-                Song(title: "Money", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 382, source: .spotify, url: "spotify://track/money"),
-                Song(title: "Us and Them", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 468, source: .spotify, url: "spotify://track/us_and_them"),
-                Song(title: "Brain Damage", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 228, source: .spotify, url: "spotify://track/brain_damage")
+                Song(title: "Time", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 421, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/time"),
+                Song(title: "Money", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 382, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/money"),
+                Song(title: "Us and Them", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 468, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/us_and_them"),
+                Song(title: "Brain Damage", artist: "Pink Floyd", album: "The Dark Side of the Moon", duration: 228, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/brain_damage")
             ]
         )
         
@@ -216,12 +218,13 @@ class MusicPlayerViewModel: ObservableObject {
             title: "The Marshall Mathers LP",
             artist: "Eminem",
             year: 2000,
+            artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg",
             source: .spotify,
             songs: [
-                Song(title: "The Real Slim Shady", artist: "Eminem", album: "The Marshall Mathers LP", duration: 284, source: .spotify, url: "spotify://track/real_slim_shady"),
-                Song(title: "Stan", artist: "Eminem", album: "The Marshall Mathers LP", duration: 404, source: .spotify, url: "spotify://track/stan"),
-                Song(title: "The Way I Am", artist: "Eminem", album: "The Marshall Mathers LP", duration: 274, source: .spotify, url: "spotify://track/the_way_i_am"),
-                Song(title: "Kill You", artist: "Eminem", album: "The Marshall Mathers LP", duration: 264, source: .spotify, url: "spotify://track/kill_you")
+                Song(title: "The Real Slim Shady", artist: "Eminem", album: "The Marshall Mathers LP", duration: 284, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/real_slim_shady"),
+                Song(title: "Stan", artist: "Eminem", album: "The Marshall Mathers LP", duration: 404, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/stan"),
+                Song(title: "The Way I Am", artist: "Eminem", album: "The Marshall Mathers LP", duration: 274, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/the_way_i_am"),
+                Song(title: "Kill You", artist: "Eminem", album: "The Marshall Mathers LP", duration: 264, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/kill_you")
             ]
         )
         
@@ -229,12 +232,13 @@ class MusicPlayerViewModel: ObservableObject {
             title: "Abbey Road",
             artist: "The Beatles",
             year: 1969,
+            artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg",
             source: .local,
             songs: [
-                Song(title: "Come Together", artist: "The Beatles", album: "Abbey Road", duration: 259, source: .local, url: "mock://local/come_together"),
-                Song(title: "Something", artist: "The Beatles", album: "Abbey Road", duration: 182, source: .local, url: "mock://local/something"),
-                Song(title: "Here Comes the Sun", artist: "The Beatles", album: "Abbey Road", duration: 185, source: .local, url: "mock://local/here_comes_sun"),
-                Song(title: "Golden Slumbers", artist: "The Beatles", album: "Abbey Road", duration: 91, source: .local, url: "mock://local/golden_slumbers")
+                Song(title: "Come Together", artist: "The Beatles", album: "Abbey Road", duration: 259, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .local, url: "mock://local/come_together"),
+                Song(title: "Something", artist: "The Beatles", album: "Abbey Road", duration: 182, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .local, url: "mock://local/something"),
+                Song(title: "Here Comes the Sun", artist: "The Beatles", album: "Abbey Road", duration: 185, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .local, url: "mock://local/here_comes_sun"),
+                Song(title: "Golden Slumbers", artist: "The Beatles", album: "Abbey Road", duration: 91, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .local, url: "mock://local/golden_slumbers")
             ]
         )
         
@@ -263,21 +267,21 @@ class MusicPlayerViewModel: ObservableObject {
     
     private func addSampleSongsToQueue() {
         let sampleSongs = [
-            Song(title: "Lose Yourself", artist: "Eminem", album: "8 Mile", duration: 326, source: .spotify, url: "spotify://track/lose_yourself"),
-            Song(title: "Shape of You", artist: "Ed Sheeran", album: "÷", duration: 233, source: .spotify, url: "spotify://track/shape_of_you"),
-            Song(title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", duration: 200, source: .spotify, url: "spotify://track/blinding_lights"),
-            Song(title: "Dance Monkey", artist: "Tones and I", album: "The Kids Are Coming", duration: 209, source: .spotify, url: "spotify://track/dance_monkey"),
-            Song(title: "Bad Guy", artist: "Billie Eilish", album: "When We All Fall Asleep, Where Do We Go?", duration: 194, source: .spotify, url: "spotify://track/bad_guy"),
-            Song(title: "Old Town Road", artist: "Lil Nas X", album: "7", duration: 157, source: .spotify, url: "spotify://track/old_town_road"),
-            Song(title: "Someone You Loved", artist: "Lewis Capaldi", album: "Divinely Uninspired to a Hellish Extent", duration: 182, source: .spotify, url: "spotify://track/someone_you_loved"),
-            Song(title: "Sunflower", artist: "Post Malone & Swae Lee", album: "Spider-Man: Into the Spider-Verse", duration: 158, source: .spotify, url: "spotify://track/sunflower"),
-            Song(title: "Happier", artist: "Marshmello & Bastille", album: "Happier", duration: 214, source: .spotify, url: "spotify://track/happier"),
-            Song(title: "Without Me", artist: "Eminem", album: "The Eminem Show", duration: 290, source: .local, url: "mock://local/without_me"),
-            Song(title: "The Real Slim Shady", artist: "Eminem", album: "The Marshall Mathers LP", duration: 284, source: .local, url: "mock://local/real_slim_shady"),
-            Song(title: "Mockingbird", artist: "Eminem", album: "Encore", duration: 251, source: .local, url: "mock://local/mockingbird"),
-            Song(title: "Not Afraid", artist: "Eminem", album: "Recovery", duration: 248, source: .local, url: "mock://local/not_afraid"),
-            Song(title: "Rap God", artist: "Eminem", album: "The Marshall Mathers LP 2", duration: 363, source: .local, url: "mock://local/rap_god"),
-            Song(title: "Godzilla", artist: "Eminem ft. Juice WRLD", album: "Music to Be Murdered By", duration: 210, source: .local, url: "mock://local/godzilla")
+            Song(title: "Lose Yourself", artist: "Eminem", album: "8 Mile", duration: 326, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/lose_yourself"),
+            Song(title: "Shape of You", artist: "Ed Sheeran", album: "÷", duration: 233, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/shape_of_you"),
+            Song(title: "Blinding Lights", artist: "The Weeknd", album: "After Hours", duration: 200, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .spotify, url: "spotify://track/blinding_lights"),
+            Song(title: "Dance Monkey", artist: "Tones and I", album: "The Kids Are Coming", duration: 209, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/dance_monkey"),
+            Song(title: "Bad Guy", artist: "Billie Eilish", album: "When We All Fall Asleep, Where Do We Go?", duration: 194, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .spotify, url: "spotify://track/bad_guy"),
+            Song(title: "Old Town Road", artist: "Lil Nas X", album: "7", duration: 157, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/old_town_road"),
+            Song(title: "Someone You Loved", artist: "Lewis Capaldi", album: "Divinely Uninspired to a Hellish Extent", duration: 182, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .spotify, url: "spotify://track/someone_you_loved"),
+            Song(title: "Sunflower", artist: "Post Malone & Swae Lee", album: "Spider-Man: Into the Spider-Verse", duration: 158, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", source: .spotify, url: "spotify://track/sunflower"),
+            Song(title: "Happier", artist: "Marshmello & Bastille", album: "Happier", duration: 214, artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png", source: .spotify, url: "spotify://track/happier"),
+            Song(title: "Without Me", artist: "Eminem", album: "The Eminem Show", duration: 290, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/without_me"),
+            Song(title: "The Real Slim Shady", artist: "Eminem", album: "The Marshall Mathers LP", duration: 284, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/real_slim_shady"),
+            Song(title: "Mockingbird", artist: "Eminem", album: "Encore", duration: 251, artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png", source: .local, url: "mock://local/mockingbird"),
+            Song(title: "Not Afraid", artist: "Eminem", album: "Recovery", duration: 248, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/not_afraid"),
+            Song(title: "Rap God", artist: "Eminem", album: "The Marshall Mathers LP 2", duration: 363, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/rap_god"),
+            Song(title: "Godzilla", artist: "Eminem ft. Juice WRLD", album: "Music to Be Murdered By", duration: 210, artworkURL: "https://upload.wikimedia.org/wikipedia/en/a/ae/The_Marshall_Mathers_LP.jpg", source: .local, url: "mock://local/godzilla")
         ]
         
         // Add sample songs to queue if it's empty

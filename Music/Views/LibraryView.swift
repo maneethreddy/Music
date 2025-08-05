@@ -228,13 +228,32 @@ struct AlbumGridView: View {
         VStack(alignment: .leading, spacing: 8) {
             // Album Artwork
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
-                    .aspectRatio(1, contentMode: .fit)
-                
-                Image(systemName: "square.stack")
-                    .font(.title)
-                    .foregroundColor(.gray)
+                if let artworkURL = album.artworkURL {
+                    AsyncImage(url: URL(string: artworkURL)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "music.note")
+                                    .font(.title)
+                                    .foregroundColor(.gray)
+                            )
+                    }
+                    .frame(width: 120, height: 120)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 120, height: 120)
+                        .overlay(
+                            Image(systemName: "music.note")
+                                .font(.title)
+                                .foregroundColor(.gray)
+                        )
+                }
             }
             .overlay(
                 // Play button overlay

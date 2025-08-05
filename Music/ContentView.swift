@@ -95,24 +95,44 @@ struct PersistentMusicPlayerView: View {
             HStack(spacing: 8) {
                 // Album artwork
                 ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 40, height: 40)
-                    
-                    if let currentSong = viewModel.currentSong {
-                        if viewModel.isPlaying {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .font(.title3)
-                                .foregroundColor(.blue)
-                        } else {
-                            Image(systemName: "music.note")
-                                .font(.title3)
-                                .foregroundColor(.gray)
+                    if let currentSong = viewModel.currentSong, let artworkURL = currentSong.artworkURL {
+                        AsyncImage(url: URL(string: artworkURL)) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.3))
+                                .overlay(
+                                    Image(systemName: "music.note")
+                                        .font(.title3)
+                                        .foregroundColor(.gray)
+                                )
                         }
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     } else {
-                        Image(systemName: "music.note")
-                            .font(.title3)
-                            .foregroundColor(.gray)
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Image(systemName: "music.note")
+                                    .font(.title3)
+                                    .foregroundColor(.gray)
+                            )
+                    }
+                    
+                    // Playing indicator overlay
+                    if let currentSong = viewModel.currentSong, viewModel.isPlaying {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 12, height: 12)
+                            .overlay(
+                                Image(systemName: "speaker.wave.2.fill")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                            )
+                            .offset(x: 12, y: -12)
                     }
                 }
                 

@@ -31,18 +31,44 @@ struct NowPlayingView: View {
                 VStack(spacing: 12) {
                     // Album Artwork
                     ZStack {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.3))
+                        if let artworkURL = currentSong.artworkURL {
+                            AsyncImage(url: URL(string: artworkURL)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.gray.opacity(0.3))
+                                    .overlay(
+                                        Image(systemName: "music.note")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(.gray)
+                                    )
+                            }
                             .frame(width: 120, height: 120)
-                        
-                        if viewModel.isPlaying {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(.blue)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         } else {
-                            Image(systemName: "music.note")
-                                .font(.system(size: 40))
-                                .foregroundColor(.gray)
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 120, height: 120)
+                                .overlay(
+                                    Image(systemName: "music.note")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                )
+                        }
+                        
+                        // Playing indicator overlay
+                        if viewModel.isPlaying {
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 30, height: 30)
+                                .overlay(
+                                    Image(systemName: "speaker.wave.2.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                )
+                                .offset(x: 35, y: -35)
                         }
                     }
                     

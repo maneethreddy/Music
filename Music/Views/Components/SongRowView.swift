@@ -9,16 +9,42 @@ struct SongRowView: View {
         HStack(spacing: 12) {
             // Album Artwork
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
+                if let artworkURL = song.artworkURL {
+                    AsyncImage(url: URL(string: artworkURL)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "music.note")
+                                    .foregroundColor(.gray)
+                            )
+                    }
                     .frame(width: 50, height: 50)
-                
-                if isPlaying {
-                    Image(systemName: "speaker.wave.2.fill")
-                        .foregroundColor(.blue)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
-                    Image(systemName: "music.note")
-                        .foregroundColor(.gray)
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 50, height: 50)
+                        .overlay(
+                            Image(systemName: "music.note")
+                                .foregroundColor(.gray)
+                        )
+                }
+                
+                // Playing indicator overlay
+                if isPlaying {
+                    Circle()
+                        .fill(Color.blue)
+                        .frame(width: 20, height: 20)
+                        .overlay(
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                        )
+                        .offset(x: 15, y: -15)
                 }
             }
             
@@ -80,6 +106,7 @@ struct SongRowView: View {
                 artist: "Queen",
                 album: "A Night at the Opera",
                 duration: 354,
+                artworkURL: "https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png",
                 source: .local,
                 url: "mock://local/bohemian"
             ),
@@ -93,6 +120,7 @@ struct SongRowView: View {
                 artist: "Ed Sheeran",
                 album: "÷",
                 duration: 233,
+                artworkURL: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png",
                 source: .spotify,
                 url: "spotify://track/shape"
             ),
