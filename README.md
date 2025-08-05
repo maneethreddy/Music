@@ -26,6 +26,9 @@ This implementation showcases a flexible music player system that can play songs
 - ✅ **Single Player Instance**: Proper audio session management
 - ✅ **Progress Updates**: Current time, duration tracking
 - ✅ **Volume Control**: Adjustable volume levels
+- ✅ **Real API Integration**: TheAudioDB API for music search
+- ✅ **Smart Search**: Artist, title, and combined search with debouncing
+- ✅ **Search UI**: Modern search interface with real-time results
 
 ## 📱 App Structure
 
@@ -45,12 +48,14 @@ This implementation showcases a flexible music player system that can play songs
 
 ### Views
 - `ContentView.swift`: Main app with tab navigation
+- `SearchView.swift`: Music search with TheAudioDB API
 - `LibraryView.swift`: Music library with filtering
 - `QueueView.swift`: Playlist queue management
 - `NowPlayingView.swift`: Current song display
 - `PlayerControlsView.swift`: Playback controls
 - `SongRowView.swift`: Reusable song list item
 - `MiniPlayerView.swift`: Compact player overlay
+- `SearchTestView.swift`: API testing interface
 
 ## 🚀 Getting Started
 
@@ -65,10 +70,14 @@ This implementation showcases a flexible music player system that can play songs
 3. Build and run the project on a simulator or device
 
 ### Usage
-1. **Library Tab**: Browse all available songs, filter by source
-2. **Queue Tab**: Manage your playlist, reorder songs
-3. **Now Playing Tab**: View current song, switch music sources
-4. **Mini Player**: Quick controls at the bottom of the screen
+1. **Search Tab**: Search for music using TheAudioDB API
+   - Search by artist: "Eminem"
+   - Search by title: "Lose Yourself"
+   - Search by artist - title: "Eminem - Lose Yourself"
+2. **Library Tab**: Browse all available songs, filter by source
+3. **Queue Tab**: Manage your playlist, reorder songs
+4. **Now Playing Tab**: View current song, switch music sources
+5. **Mini Player**: Quick controls at the bottom of the screen
 
 ## 🎨 UI Features
 

@@ -67,6 +67,9 @@ class MusicPlayerViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
+        // Switch to the appropriate source for the song
+        switchSource(to: song.source)
+        
         musicPlayerService.play(song: song)
             .sink(receiveValue: { [weak self] _ in
                 self?.isLoading = false

@@ -10,10 +10,28 @@ import UIKit
 
 struct ContentView: View {
     @StateObject private var viewModel = MusicPlayerViewModel()
+    @StateObject private var searchViewModel: SearchViewModel
     @State private var selectedTab = 0
+    
+    init() {
+        let musicPlayerViewModel = MusicPlayerViewModel()
+        self._viewModel = StateObject(wrappedValue: musicPlayerViewModel)
+        self._searchViewModel = StateObject(wrappedValue: SearchViewModel(musicPlayerViewModel: musicPlayerViewModel))
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
+            // Search Tab
+            NavigationView {
+                SearchView(searchViewModel: searchViewModel, musicPlayerViewModel: viewModel)
+                    .navigationTitle("Search")
+            }
+            .tabItem {
+                Image(systemName: "magnifyingglass")
+                Text("Search")
+            }
+            .tag(0)
+            
             // Library Tab
             NavigationView {
                 LibraryView(viewModel: viewModel)
@@ -23,7 +41,7 @@ struct ContentView: View {
                 Image(systemName: "music.note.list")
                 Text("Library")
             }
-            .tag(0)
+            .tag(1)
             
             // Queue Tab
             NavigationView {
@@ -34,7 +52,7 @@ struct ContentView: View {
                 Image(systemName: "list.bullet")
                 Text("Queue")
             }
-            .tag(1)
+            .tag(2)
             
             // Now Playing Tab
             NavigationView {
@@ -45,7 +63,7 @@ struct ContentView: View {
                 Image(systemName: "play.circle")
                 Text("Now Playing")
             }
-            .tag(2)
+            .tag(3)
         }
         .overlay(
             // Mini Player at bottom
